@@ -41,34 +41,41 @@ def get_nested_value(data, path):
         for key in keys:
             data = data[key]
         return data
-    except (KeyError, TypeError):
+    except Exception as e:
+        printError(f"Failed to get nested value for path: {path}",e)
         return None
 
 def syncAction(physicalButtonState, gameButtonState, keyToPress, action):
-    if physicalButtonState and not gameButtonState:
-        printInfo(f"Key {keyToPress} to turn ON "+action)
-        pressKey(keyToPress)
-    elif not physicalButtonState and gameButtonState:
-        printInfo(f"Key {keyToPress} to turn OFF "+action)
-        pressKey(keyToPress)
-    # else:
-        # printInfo("No change needed")
+    try:
+        if physicalButtonState and not gameButtonState:
+            printInfo(f"Key {keyToPress} to turn ON "+action)
+            pressKey(keyToPress)
+        elif not physicalButtonState and gameButtonState:
+            printInfo(f"Key {keyToPress} to turn OFF "+action)
+            pressKey(keyToPress)
+        # else:
+            # printInfo("No change needed")
+    except Exception as e:
+        printError(f"SyncAction error for action {action} when keypress {keyToPress}:", e)
 
 def pressKey(keyToPress):
-    if isinstance(keyToPress, str):
-        # printDebug("It's a string")
-        printDebug(f"Pressing {keyToPress}")
-        keyboard.press_and_release(keyToPress)
-        time.sleep(0.3)    
-    elif isinstance(keyToPress, (list, tuple)) and all(isinstance(x, str) for x in keyToPress):
-        #printDebug("It's a list or tuple of strings")
-        printDebug(f"Pressing {keyToPress}")
-        keyboard.press(keyToPress[0])
-        keyboard.press_and_release(keyToPress[1])
-        keyboard.release(keyToPress[0])
-        time.sleep(0.3)
-    else:
-        printInfo("Something else")
+    try:
+        if isinstance(keyToPress, str):
+            # printDebug("It's a string")
+            printDebug(f"Pressing {keyToPress}")
+            keyboard.press_and_release(keyToPress)
+            time.sleep(0.3)    
+        elif isinstance(keyToPress, (list, tuple)) and all(isinstance(x, str) for x in keyToPress):
+            #printDebug("It's a list or tuple of strings")
+            printDebug(f"Pressing {keyToPress}")
+            keyboard.press(keyToPress[0])
+            keyboard.press_and_release(keyToPress[1])
+            keyboard.release(keyToPress[0])
+            time.sleep(0.3)
+        else:
+            printInfo("Something else")
+    except Exception as e:
+        printError(f"PressKey error for keypress {keyToPress}:", e)
 
 def getTelemetry():
     try:
@@ -113,50 +120,63 @@ def if_run_script():
     except Exception as e:
         printError("Failed to get active window", e)
         return False
-
+    
 # Initialize Pygame joystick
-pygame.init()
-pygame.joystick.init()
+try:
+    
+    pygame.init()
+    pygame.joystick.init()
 
-# List connected joysticks
-if pygame.joystick.get_count() == 0:
-    printWarn("No joystick detected!")
-    exit()
+    # List connected joysticks
+    if pygame.joystick.get_count() == 0:
+        printWarn("No joystick detected!")
+        exit()
 
-joy = pygame.joystick.Joystick(0)
-if pygame.joystick.get_count() == 2:
-    joy = pygame.joystick.Joystick(1)
+    joy = pygame.joystick.Joystick(0)
+    if pygame.joystick.get_count() == 2:
+        joy = pygame.joystick.Joystick(1)
 
-joy.init()
-printInfo(f"Using joystick: {joy.get_name()} with {joy.get_numbuttons()} buttons")
+    joy.init()
+    printInfo(f"Using joystick: {joy.get_name()} with {joy.get_numbuttons()} buttons")
 
-# Main loop
-while True:
+    # Main loop
+    while True:
 
-    # Read ETS2 telemetry
-    try:
-        if if_run_script():
-            telemetry = getTelemetry()
-            if not telemetry:
-                time.sleep(1)
-                continue
+        # Read ETS2 telemetry
+        try:
+            if if_run_script():
+                telemetry = getTelemetry()
+                if not telemetry:
+                    printWarn("No telemetry data received. Retrying...")
+                    time.sleep(1)
+                    continue
+                else:
+                    truck_id = telemetry.get('truck', {}).get('id', None)
+                    isGamePaused = telemetry.get('game', {}).get('paused', True)
+                    if not truck_id:
+                        printWarn("Truck ID is empty or null")
+                        time.sleep(1)
+                        continue
+                    elif not isGamePaused:
+                        printInfo(f"Truck ID: {truck_id}")
+                        printInfo(f"Game Paused: {isGamePaused}")
+                        # Example: Button 1(index=0) → Electricity
+                        syncButton(joy, 0, 'truck/electricOn', ['shift', 'e'], "Electricity", telemetry)
+
+                        # Example: Button 5(index=4) → High Beam Lights
+                        syncButton(joy, 4, 'truck/lightsBeamHighOn', 'k', "HighBeam", telemetry)
+
+                        # Example: Button 7(index=6) → Beacon Lights
+                        syncButton(joy, 6, 'truck/lightsBeaconOn', 'o', "BeaconLights", telemetry)
             else:
-                # Example: Button 1(index=0) → Electricity
-                syncButton(joy, 0, 'truck/electricOn', ['shift', 'e'], "Electricity", telemetry)
+                printWarn("ETS2 is not the active window. Waiting...")
+                time.sleep(5)
+        except Exception as e:
+            printError("SyncButton failed:", e)
+            time.sleep(1)
+            continue
+        time.sleep(0.1)
 
-                # Example: Button 5(index=4) → High Beam Lights
-                syncButton(joy, 4, 'truck/lightsBeamHighOn', 'k', "HighBeam", telemetry)
-
-                # Example: Button 7(index=6) → Beacon Lights
-                syncButton(joy, 6, 'truck/lightsBeaconOn', 'o', "BeaconLights", telemetry)
-        else:
-            printWarn("ETS2 is not the active window. Waiting...")
-            time.sleep(5)
-    except Exception as e:
-        printError("SyncButton failed:", e)
-        time.sleep(1)
-        continue
-
-    time.sleep(0.1)
-
+except Exception as e:
+    printError("Fatal error in main loop:", e)
     
