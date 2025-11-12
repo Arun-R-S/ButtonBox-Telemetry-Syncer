@@ -168,6 +168,8 @@ try:
 
                         # Example: Button 7(index=6) → Beacon Lights
                         syncButton(joy, 6, 'truck/lightsBeaconOn', 'o', "BeaconLights", telemetry)
+                    elif isGamePaused:
+                        printWarn("Game Paused")
             else:
                 printWarn("ETS2 is not the active window. Waiting...")
                 time.sleep(5)
