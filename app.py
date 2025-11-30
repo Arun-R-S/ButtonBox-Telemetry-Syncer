@@ -23,10 +23,11 @@ import json
 
 # --- Color codes ---
 COLOR_RESET = "\033[0m"
-COLOR_DEBUG = "\033[36m"   # Cyan
-COLOR_INFO  = "\033[32m"   # Green
-COLOR_WARN  = "\033[33m"   # Yellow
-COLOR_ERROR = "\033[31m"   # Red
+COLOR_DEBUG = "\033[36m"        # Cyan
+COLOR_DEBUG_WARN = "\033[95m"   # Bright Magenta
+COLOR_INFO  = "\033[32m"        # Green
+COLOR_WARN  = "\033[33m"        # Yellow
+COLOR_ERROR = "\033[31m"        # Red
 
 from colorama import Fore, Style, init
 init(autoreset=True)
@@ -83,6 +84,10 @@ def printLog(message):
 def printDebug(message):
     if GLOBAL_CONFIG.get("LoggingLevels", {}).get("DEBUG", False):
         LogPrint("DEBUG", COLOR_DEBUG, message)
+
+def printDebugWarn(message):
+    if GLOBAL_CONFIG.get("LoggingLevels", {}).get("DEBUGWARN", False):
+        LogPrint("DEBUG-WARN", COLOR_DEBUG_WARN, message)
 
 def printInfo(message):
     if GLOBAL_CONFIG.get("LoggingLevels", {}).get("INFO", False):
@@ -175,7 +180,7 @@ def if_run_script():
         if not GLOBAL_CONFIG["ACTIVATE_SCRIPT_ONLY_IN_ETS2"]:
             return True
         else:
-            printInfo("Checking active window...")
+            printDebug("Checking active window...")
             active_window = win32gui.GetWindowText(win32gui.GetForegroundWindow())
             printDebug(f"Active window: {active_window}")
             return GLOBAL_CONFIG["ETS2_WINDOW_TITLE"].lower() in active_window.lower()
@@ -307,7 +312,7 @@ try:
         try:
             selected_joystick_index = (input("Select joystick by ID number: "))
             if selected_joystick_index == 'x' or selected_joystick_index == 'X':
-                printInfo("Exiting...")
+                printLog("Exiting...")
                 exit()
             if selected_joystick_index == "r" or selected_joystick_index == "R":
                 listAllJoysticks(True)
@@ -378,9 +383,9 @@ try:
                                 telemetry
                             )
                     elif isGamePaused:
-                        printWarn("Game Paused")
+                        printDebugWarn("Game Paused")
             else:
-                printWarn("ETS2 is not the active window. Waiting...")
+                printDebugWarn("ETS2 is not the active window. Waiting...")
                 time.sleep(5)
         except Exception as e:
             printError("SyncButton failed:", e)
