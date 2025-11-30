@@ -22,7 +22,7 @@ import json
 
 
 # --- Color codes ---
-RESET = "\033[0m"
+COLOR_RESET = "\033[0m"
 COLOR_DEBUG = "\033[36m"   # Cyan
 COLOR_INFO  = "\033[32m"   # Green
 COLOR_WARN  = "\033[33m"   # Yellow
@@ -32,13 +32,13 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 ascii_art = f"""
-{Fore.RED}   ░███                                      ░█████████       ░██████   {RESET}
-{Fore.RED}  ░██░██                                     ░██     ░██     ░██   ░██  {RESET}
-{Fore.RED} ░██  ░██  ░██░████ ░██    ░██ ░████████     ░██     ░██    ░██         {RESET}
-{Fore.YELLOW}░█████████ ░███     ░██    ░██ ░██    ░██    ░█████████      ░████████  {RESET}
-{Fore.YELLOW}░██    ░██ ░██      ░██    ░██ ░██    ░██    ░██   ░██              ░██ {RESET}
-{Fore.RED}░██    ░██ ░██      ░██   ░███ ░██    ░██    ░██    ░██      ░██   ░██  {RESET}
-{Fore.RED}░██    ░██ ░██       ░█████░██ ░██    ░██    ░██     ░██      ░██████   {RESET}
+{Fore.RED}   ░███                                      ░█████████       ░██████   {COLOR_RESET}
+{Fore.RED}  ░██░██                                     ░██     ░██     ░██   ░██  {COLOR_RESET}
+{Fore.RED} ░██  ░██  ░██░████ ░██    ░██ ░████████     ░██     ░██    ░██         {COLOR_RESET}
+{Fore.YELLOW}░█████████ ░███     ░██    ░██ ░██    ░██    ░█████████      ░████████  {COLOR_RESET}
+{Fore.YELLOW}░██    ░██ ░██      ░██    ░██ ░██    ░██    ░██   ░██              ░██ {COLOR_RESET}
+{Fore.RED}░██    ░██ ░██      ░██   ░███ ░██    ░██    ░██    ░██      ░██   ░██  {COLOR_RESET}
+{Fore.RED}░██    ░██ ░██       ░█████░██ ░██    ░██    ░██     ░██      ░██████   {COLOR_RESET}
 {Fore.GREEN}🚛 Welcome to ETS2 ButtonBox Syncer 🚛
 """
 
@@ -75,19 +75,26 @@ def _timestamp():
 
 def LogPrint(level, color, message, exception=None):
     """Base logging function with color and timestamp."""
-    print(f"[{_timestamp()}] {color}{level:<7}{RESET} {message} {f'Exception: {exception}' if exception else ''}")
+    print(f"[{_timestamp()}] {color}{level:<7}{COLOR_RESET} {message} {f'Exception: {exception}' if exception else ''}")
+
+def printLog(message):
+    LogPrint("LOG", COLOR_RESET, message)
 
 def printDebug(message):
-    LogPrint("DEBUG", COLOR_DEBUG, message)
+    if GLOBAL_CONFIG.get("LoggingLevels", {}).get("DEBUG", False):
+        LogPrint("DEBUG", COLOR_DEBUG, message)
 
 def printInfo(message):
-    LogPrint("INFO", COLOR_INFO, message)
+    if GLOBAL_CONFIG.get("LoggingLevels", {}).get("INFO", False):
+        LogPrint("INFO", COLOR_INFO, message)
 
 def printWarn(message):
-    LogPrint("WARN", COLOR_WARN, message)
+    if GLOBAL_CONFIG.get("LoggingLevels", {}).get("WARN", False):
+        LogPrint("WARN", COLOR_WARN, message)
 
 def printError(message, exception=None):
-    LogPrint("ERROR", COLOR_ERROR, message, exception)
+    if GLOBAL_CONFIG.get("LoggingLevels", {}).get("ERROR", False):
+        LogPrint("ERROR", COLOR_ERROR, message, exception)
 
 def get_nested_value(data, path):
     """Get nested JSON value from 'path' like 'truck/electricOn'"""
@@ -128,7 +135,7 @@ def pressKey(keyToPress):
             keyboard.release(keyToPress[0])
             time.sleep(0.3)
         else:
-            printInfo("Something else")
+            printError("PressKey: Key assignment is not defined correctly.")
     except Exception as e:
         printError(f"PressKey error for keypress {keyToPress}:", e)
 
@@ -154,24 +161,24 @@ def syncButton(joy, buttonIndex, telemetryPath, keyToPress, actionName, telemetr
         if game_state is not None:
             syncAction(physical_state, game_state, keyToPress, actionName)
         else:
-            printWarn(f"⚠️ Telemetry path not found: {telemetryPath}")
+            printError(f"⚠️ Telemetry path not found: {telemetryPath}")
     except Exception as e:
         printError(f"SyncButton error for {actionName} when keypress {keyToPress}:", e)
 
 # --- Settings ---
-ETS2_WINDOW_TITLE = "Euro Truck Simulator 2"  # Partial match is fine
-RUN_SCRIPT_ONLY_IN_ETS2 = True
+# ETS2_WINDOW_TITLE = "Euro Truck Simulator 2"  # Partial match is fine
+# ACTIVATE_SCRIPT_ONLY_IN_ETS2 = True
 
 def if_run_script():
     """Check if the currently active window is ETS2."""
     try:
-        if not RUN_SCRIPT_ONLY_IN_ETS2:
+        if not GLOBAL_CONFIG["ACTIVATE_SCRIPT_ONLY_IN_ETS2"]:
             return True
         else:
             printInfo("Checking active window...")
             active_window = win32gui.GetWindowText(win32gui.GetForegroundWindow())
-            printInfo(f"Active window: {active_window}")
-            return ETS2_WINDOW_TITLE.lower() in active_window.lower()
+            printDebug(f"Active window: {active_window}")
+            return GLOBAL_CONFIG["ETS2_WINDOW_TITLE"].lower() in active_window.lower()
     except Exception as e:
         printError("Failed to get active window", e)
         return False
@@ -323,8 +330,8 @@ try:
     joy.init()
     printInfo(f"Using joystick: {joy.get_name()} with {joy.get_numbuttons()} buttons")
     time.sleep(2)
-    printInfo("---------------------------Telemetry Syncer Started-----------------------------")
-    printInfo("-----------------------------Press Ctrl+C to exit-------------------------------")
+    printLog("---------------------------Telemetry Syncer Started-----------------------------")
+    printLog("-----------------------------Press Ctrl+C to exit-------------------------------")
     loading_animation(5)
     # Main loop
     while True:
@@ -342,12 +349,12 @@ try:
                     truck_id = telemetry.get('truck', {}).get('id', None)
                     isGamePaused = telemetry.get('game', {}).get('paused', True)
                     if not truck_id:
-                        printWarn("Truck ID is empty or null")
+                        printDebug("Truck ID is empty or null")
                         time.sleep(1)
                         continue
                     elif not isGamePaused:
-                        printInfo(f"Truck ID: {truck_id}")
-                        printInfo(f"Game Paused: {isGamePaused}")
+                        printDebug(f"Truck ID: {truck_id}")
+                        printDebug(f"Game Paused: {isGamePaused}")
                         # # Example: Button 1(index=0) → Electricity
                         # syncButton(joy, 0, 'truck/electricOn', ['shift', 'e'], "Electricity", telemetry)
 
