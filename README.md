@@ -34,6 +34,7 @@ A small Windows utility that binds a physical button box (joystick) to Euro Truc
 - Runs as a Python script (for development) **or** as a bundled Windows executable (via PyInstaller) — easy distribution.  
 - Option to run with administrator privileges (helps with global input injection / HID access).  
 
+**Important Note**: Assign any keyboard key or combo keys(modifier + key) as primary for each and then assign button box physical switches as secondary in the ETS2 Key Binding Settings. So that this tool can able to sync the Physical Switch state with the ETS2 state through the keyboard key. If you assign just the primary or secondary key as button box key then this tool can't able to sync. So it need another key binding as keyboard key.
 ---
 
 ## Requirements ✅  
@@ -150,7 +151,9 @@ Here is the exact config you provided (reformatted). I explain every key below.
         
     -   `telemetryPathToSync` — JSON path in ETS2 telemetry to read for current in-game status (the script will sync the device state with this telemetry value).
         
-    -   `keyToPress` — the keyboard key(s) to send to ETS2 when the physical button state is not in sync. Can be a string (e.g. `"k"`) or an array for modifiers + key (e.g. `["shift", "e"]`). **Note**: Assign any keyboard key or combo keys(modifier + key) as primary for each and every button box physical switches as secondary. So that this tool can able to sync the Physical Switch state with the ETS2 state through the keyboard key. If you assign just the primary or secondary key as button box key then this tool can't able to sync. So it need another key binding as keyboard key.
+    -   `keyToPress` — the keyboard key(s) to send to ETS2 when the physical button state is not in sync. Can be a string (e.g. `"k"`) or an array for modifiers + key (e.g. `["shift", "e"]`). 
+
+    **Important Note**: Assign any keyboard key or combo keys(modifier + key) as primary for each and then assign button box physical switches as secondary in the ETS2 Key Binding Settings. So that this tool can able to sync the Physical Switch state with the ETS2 state through the keyboard key. If you assign just the primary or secondary key as button box key then this tool can't able to sync. So it need another key binding as keyboard key.
 ---
 
 ## Running the Syncer 🏃
@@ -178,6 +181,7 @@ If your `config.json` is not in the same folder, or named differently,  then the
 
 💡 Enable `"DEBUG": true` and `"DEBUGWARN": true` in config to log all events to `console` — helps in diagnosing issues.
 
+**Important Note**: Assign any keyboard key or combo keys(modifier + key) as primary for each and then assign button box physical switches as secondary in the ETS2 Key Binding Settings. So that this tool can able to sync the Physical Switch state with the ETS2 state through the keyboard key. If you assign just the primary or secondary key as button box key then this tool can't able to sync. So it need another key binding as keyboard key.
 ---
 
 ## Contributing 🤝
