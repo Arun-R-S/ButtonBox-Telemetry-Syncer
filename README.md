@@ -181,7 +181,7 @@ If your `config.json` is not in the same folder, or named differently,  then the
 
 💡 Enable `"DEBUG": true` and `"DEBUGWARN": true` in config to log all events to `console` — helps in diagnosing issues.
 
-**Important Note**: Assign any keyboard key or combo keys(modifier + key) as primary for each and then assign button box physical switches as secondary in the ETS2 Key Binding Settings. So that this tool can able to sync the Physical Switch state with the ETS2 state through the keyboard key. If you assign just the primary or secondary key as button box key then this tool can't able to sync. So it need another key binding as keyboard key.
+	**Important Note**: Assign any keyboard key or combo keys(modifier + key) as primary for each and then assign button box physical switches as secondary in the ETS2 Key Binding Settings. So that this tool can 	able to sync the Physical Switch state with the ETS2 state through the keyboard key. If you assign just the primary or secondary key as button box key then this tool can't able to sync. So it need another key binding as keyboard key.
 ---
 
 ## Contributing 🤝
