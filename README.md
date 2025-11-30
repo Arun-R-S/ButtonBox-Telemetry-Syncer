@@ -86,18 +86,18 @@ Here is the exact config you provided (reformatted). I explain every key below.
 
 ```JSON
 {
-"LoggingLevels": {
-	"INFO": true,
-	"WARN": true,
-	"DEBUG": false,
-	"DEBUGWARN": false,
-	"ERROR": true
-},
-"ACTIVATE_SCRIPT_ONLY_IN_ETS2": true,
-"ETS2_WINDOW_TITLE": "Euro Truck Simulator 2",
-"isButtonNumberIndex": false,
-"TelemetryAPIAddress": "http://localhost:25555/api/ets2/telemetry",
-"JOYSTICK_BUTTON_MAPPINGS": [
+    "LoggingLevels": {
+        "INFO": true,
+        "WARN": true,
+        "DEBUG": false,
+        "DEBUGWARN": false,
+        "ERROR": true
+    },
+    "ACTIVATE_SCRIPT_ONLY_IN_ETS2": true,
+    "ETS2_WINDOW_TITLE": "Euro Truck Simulator 2",
+    "isButtonNumberIndex": false,
+    "TelemetryAPIAddress": "http://localhost:25555/api/ets2/telemetry",
+    "JOYSTICK_BUTTON_MAPPINGS": [
 		{
 			"joystickButtonNumber": 1,
 			"actionName": "Electricity",
