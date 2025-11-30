@@ -1,0 +1,42 @@
+{
+    "LoggingLevels": {
+        "INFO": true,
+        "WARN": true,
+        "DEBUG": false,
+        "DEBUGWARN": false,
+        "ERROR": true
+    },
+    "ACTIVATE_SCRIPT_ONLY_IN_ETS2": true,
+    "ETS2_WINDOW_TITLE": "Euro Truck Simulator 2",
+    "isButtonNumberIndex": true,
+    "TelemetryAPIAddress":  "http://localhost:25555/api/ets2/telemetry",
+    "JOYSTICK_BUTTON_MAPPINGS": [
+        {
+            "joystickButtonNumber": 0,
+            "actionName": "Electricity",
+            "telemetryPathToSync": "truck/electricOn",
+            "keyToPress": [
+                "shift",
+                "e"
+            ]
+        },
+        {
+            "joystickButtonNumber": 4,
+            "actionName": "HighBeam",
+            "telemetryPathToSync": "truck/lightsBeamHighOn",
+            "keyToPress": "k"
+        },
+        {
+            "joystickButtonNumber": 6,
+            "actionName": "BeaconLights",
+            "telemetryPathToSync": "truck/lightsBeaconOn",
+            "keyToPress": "o"
+        },
+        {
+            "joystickButtonNumber": 7,
+            "actionName": "EngineBrake",
+            "telemetryPathToSync": "truck/motorBrakeOn",
+            "keyToPress": "b"
+        }
+    ]
+}
