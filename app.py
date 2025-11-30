@@ -8,7 +8,9 @@ import win32gui
 from datetime import datetime
 import colorama
 colorama.init()
-from button_config import JOYSTICK_BUTTON_MAPPINGS
+#from button_config import JOYSTICK_BUTTON_MAPPINGS
+import json
+import os
 
 # --- Color codes ---
 RESET = "\033[0m"
@@ -16,6 +18,18 @@ COLOR_DEBUG = "\033[36m"   # Cyan
 COLOR_INFO  = "\033[32m"   # Green
 COLOR_WARN  = "\033[33m"   # Yellow
 COLOR_ERROR = "\033[31m"   # Red
+
+def load_config():
+    """Load JSON config file and return the mappings list."""
+    config_path = "button_config.json"
+
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Missing config file: {config_path}")
+
+    with open(config_path, "r") as f:
+        data = json.load(f)
+
+    return data.get("JOYSTICK_BUTTON_MAPPINGS", [])
 
 def _timestamp():
     """Return formatted timestamp."""
@@ -199,7 +213,7 @@ try:
 
                         # # Example: Button 7(index=6) → Beacon Lights
                         # syncButton(joy, 6, 'truck/lightsBeaconOn', 'o', "BeaconLights", telemetry)
-
+                        JOYSTICK_BUTTON_MAPPINGS = load_config()
                         for cfg in JOYSTICK_BUTTON_MAPPINGS:
                             syncButton(
                                 joy,

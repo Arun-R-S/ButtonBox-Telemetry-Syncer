@@ -1,0 +1,22 @@
+{
+  "JOYSTICK_BUTTON_MAPPINGS": [
+    {
+      "joystickButtonIndex": 0,
+      "telemetryPath": "truck/electricOn",
+      "keyToPress": ["shift", "e"],
+      "actionName": "Electricity"
+    },
+    {
+      "joystickButtonIndex": 4,
+      "telemetryPath": "truck/lightsBeamHighOn",
+      "keyToPress": "k",
+      "actionName": "HighBeam"
+    },
+    {
+      "joystickButtonIndex": 6,
+      "telemetryPath": "truck/lightsBeaconOn",
+      "keyToPress": "o",
+      "actionName": "BeaconLights"
+    }
+  ]
+}
