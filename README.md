@@ -39,6 +39,8 @@ A small Windows utility that binds a physical button box (joystick) to Euro Truc
 ## Requirements ✅  
 
 - **OS**: Windows (since the project uses Windows-specific APIs for global keyboard injection / window detection)  
+- **ETS2**: Required Euro Truck Simulator 2 Game in your windows. [Buy Game](https://store.steampowered.com/app/227300/Euro_Truck_Simulator_2/)
+- **ETS2-Telemetry-Server**: You need to run the ETS2 Telemetry server windows app. You can get is from this repo - [Funbit/ets2-telemetry-server](https://github.com/Funbit/ets2-telemetry-server)
 - **Python**: 3.7+ recommended  
 - **Python packages** (install via `pip`):  
   - `pygame`  
