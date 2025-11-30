@@ -150,7 +150,7 @@ Here is the exact config you provided (reformatted). I explain every key below.
         
     -   `telemetryPathToSync` — JSON path in ETS2 telemetry to read for current in-game status (the script will sync the device state with this telemetry value).
         
-    -   `keyToPress` — the keyboard key(s) to send to ETS2 when the physical button is pressed. Can be a string (e.g. `"k"`) or an array for modifiers + key (e.g. `["shift", "e"]`).
+    -   `keyToPress` — the keyboard key(s) to send to ETS2 when the physical button state is not in sync. Can be a string (e.g. `"k"`) or an array for modifiers + key (e.g. `["shift", "e"]`). **Note**: Assign any keyboard key or combo keys(modifier + key) as primary for each and every button box physical switches as secondary. So that this tool can able to sync the Physical Switch state with the ETS2 state through the keyboard key. If you assign just the primary or secondary key as button box key then this tool can't able to sync. So it need another key binding as keyboard key.
 ---
 
 ## Running the Syncer 🏃
