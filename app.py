@@ -6,6 +6,8 @@ import pyautogui
 import pygetwindow as gw
 import win32gui
 from datetime import datetime
+import colorama
+colorama.init()
 
 # --- Color codes ---
 RESET = "\033[0m"
@@ -126,16 +128,44 @@ try:
     
     pygame.init()
     pygame.joystick.init()
-
+    num_joysticks = pygame.joystick.get_count()
     # List connected joysticks
-    if pygame.joystick.get_count() == 0:
+    if num_joysticks == 0:
         printWarn("No joystick detected!")
         exit()
 
-    joy = pygame.joystick.Joystick(0)
-    if pygame.joystick.get_count() == 2:
-        joy = pygame.joystick.Joystick(1)
+    # List all joysticks
+    printInfo("Connected joysticks:")
+    for i in range(num_joysticks):
+        joy_name = pygame.joystick.Joystick(i).get_name()
+        print(f"  [{i}] {joy_name}")
+    print()
+    print("  [X] Exit")
+    # joy = pygame.joystick.Joystick(0)
+    # if pygame.joystick.get_count() == 2:
+    #     joy = pygame.joystick.Joystick(1)
 
+    # Ask user to select joystick
+    selected_joystick_index = -1
+    while True:
+        try:
+            selected_joystick_index = (input("Select joystick by number: "))
+            if selected_joystick_index == 'x' or selected_joystick_index == 'X':
+                printInfo("Exiting...")
+                exit()
+            selected_joystick_index = int(selected_joystick_index)
+            if 0 <= selected_joystick_index < num_joysticks:
+                break
+            else:
+                if num_joysticks == 1:
+                    printWarn("Please enter 0 since there is only one joystick connected Or X to exit.")
+                else:
+                    printWarn(f"Please enter a number between 0 and {num_joysticks-1}")
+        except ValueError:
+            printWarn("Invalid input. Enter a number.")
+
+    # Initialize chosen joystick
+    joy = pygame.joystick.Joystick(selected_joystick_index)
     joy.init()
     printInfo(f"Using joystick: {joy.get_name()} with {joy.get_numbuttons()} buttons")
 
