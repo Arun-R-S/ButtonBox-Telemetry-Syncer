@@ -35,7 +35,7 @@
         {
             "joystickButtonNumber": 7,
             "actionName": "EngineBrake",
-            "telemetryPathToSync": "truck/motorBrake",
+            "telemetryPathToSync": "truck/motorBrakeOn",
             "keyToPress": "b"
         }
     ]
