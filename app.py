@@ -114,6 +114,7 @@ def get_nested_value(data, path):
 
 def syncAction(physicalButtonState, gameButtonState, keyToPress, action):
     try:
+        printDebug(f"SyncAction: Physical: {physicalButtonState}, Game: {gameButtonState}, Key: {keyToPress}, Action: {action}")
         if physicalButtonState and not gameButtonState:
             printInfo(f"Key {keyToPress} to turn ON "+action)
             pressKey(keyToPress)
