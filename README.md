@@ -7,14 +7,14 @@
 ## 📘 Table of Contents  
 
 - [What is this project?](#what-is-this-project)  
-- [Features ⭐](#features-⭐)  
-- [Requirements ✅](#requirements-✅)  
-- [Installation & Setup 🚀](#installation--setup-🚀)  
-- [Configuration 🔧](#configuration-🔧config.json)  
-- [Running the Syncer 🏃](#running-the-syncer-🏃)  
-- [Troubleshooting & Tips 🛠️](#troubleshooting--tips-🛠️)  
-- [Contributing 🤝](#contributing-🤝)  
-- [License 📄](#license-📄)  
+- [Features ⭐](#features-)  
+- [Requirements ✅](#requirements-)  
+- [Installation & Setup 🚀](#installation--setup-)  
+- [Configuration 🔧](#configuration-config.json)  
+- [Running the Syncer 🏃](#running-the-syncer-)  
+- [Troubleshooting & Tips 🛠️](#troubleshooting--tips-)  
+- [Contributing 🤝](#contributing-)  
+- [License 📄](#license-)  
 
 ---
 
