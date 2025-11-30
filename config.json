@@ -1,0 +1,27 @@
+{
+    "isButtonNumberIndex": false,
+    "TelemetryAPIAddress":  "http://localhost:25555/api/ets2/telemetry",
+    "JOYSTICK_BUTTON_MAPPINGS": [
+        {
+            "joystickButtonNumber": 1,
+            "actionName": "Electricity",
+            "telemetryPathToSync": "truck/electricOn",
+            "keyToPress": [
+                "shift",
+                "e"
+            ]
+        },
+        {
+            "joystickButtonNumber": 5,
+            "actionName": "HighBeam",
+            "telemetryPathToSync": "truck/lightsBeamHighOn",
+            "keyToPress": "k"
+        },
+        {
+            "joystickButtonNumber": 7,
+            "actionName": "BeaconLights",
+            "telemetryPathToSync": "truck/lightsBeaconOn",
+            "keyToPress": "o"
+        }
+    ]
+}

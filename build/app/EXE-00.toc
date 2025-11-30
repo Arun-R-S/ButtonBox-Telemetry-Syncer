@@ -1,8 +1,9 @@
-('K:\\Projects\\ETS2 Deck\\ButtonBox-Telemetry-Syncer\\build\\app\\app.exe',
+('K:\\Projects\\ETS2 Deck\\ButtonBox-Telemetry-Syncer\\build\\app\\ETS2 '
+ 'ButtonBox Syncer.exe',
  True,
  False,
  True,
- 'C:\\Users\\Arun\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\bootloader\\images\\icon-console.ico',
+ ['K:\\Projects\\ETS2 Deck\\ButtonBox-Telemetry-Syncer\\icon.ico'],
  None,
  False,
  False,
@@ -29,7 +30,8 @@
  None,
  None,
  None,
- 'K:\\Projects\\ETS2 Deck\\ButtonBox-Telemetry-Syncer\\build\\app\\app.pkg',
+ 'K:\\Projects\\ETS2 Deck\\ButtonBox-Telemetry-Syncer\\build\\app\\ETS2 '
+ 'ButtonBox Syncer.pkg',
  [('pyi-contents-directory _internal', '', 'OPTION'),
   ('PYZ-00.pyz',
    'K:\\Projects\\ETS2 '
@@ -82,7 +84,7 @@
  [],
  False,
  False,
- 1764490702,
+ 1764506173,
  [('run.exe',
    'C:\\Users\\Arun\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\run.exe',
    'EXECUTABLE')],

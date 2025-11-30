@@ -1,4 +1,13 @@
+import sys
+import os
+# mute output
+stdout_backup = sys.stdout
+sys.stdout = open(os.devnull, 'w')
+
 import pygame
+
+# restore output
+sys.stdout = stdout_backup
 import requests
 import keyboard
 import time
@@ -8,9 +17,9 @@ import win32gui
 from datetime import datetime
 import colorama
 colorama.init()
-#from button_config import JOYSTICK_BUTTON_MAPPINGS
+#from config import JOYSTICK_BUTTON_MAPPINGS
 import json
-import os
+
 
 # --- Color codes ---
 RESET = "\033[0m"
@@ -19,9 +28,38 @@ COLOR_INFO  = "\033[32m"   # Green
 COLOR_WARN  = "\033[33m"   # Yellow
 COLOR_ERROR = "\033[31m"   # Red
 
+from colorama import Fore, Style, init
+init(autoreset=True)
+
+ascii_art = f"""
+{Fore.RED}   ░███                                      ░█████████       ░██████   {RESET}
+{Fore.RED}  ░██░██                                     ░██     ░██     ░██   ░██  {RESET}
+{Fore.RED} ░██  ░██  ░██░████ ░██    ░██ ░████████     ░██     ░██    ░██         {RESET}
+{Fore.YELLOW}░█████████ ░███     ░██    ░██ ░██    ░██    ░█████████      ░████████  {RESET}
+{Fore.YELLOW}░██    ░██ ░██      ░██    ░██ ░██    ░██    ░██   ░██              ░██ {RESET}
+{Fore.RED}░██    ░██ ░██      ░██   ░███ ░██    ░██    ░██    ░██      ░██   ░██  {RESET}
+{Fore.RED}░██    ░██ ░██       ░█████░██ ░██    ░██    ░██     ░██      ░██████   {RESET}
+{Fore.GREEN}🚛 Welcome to ETS2 ButtonBox Syncer 🚛
+"""
+
+print(ascii_art)
+
+
+GLOBAL_CONFIG = {}
+GLOBAL_JOYSTICKS = pygame.joystick
+
 def load_config():
     """Load JSON config file and return the mappings list."""
-    config_path = "button_config.json"
+    config_path = "config.json"
+
+    if getattr(sys, 'frozen', False):
+    # running from PyInstaller EXE
+        exe_dir = os.path.dirname(sys.executable)
+    else:
+        # running from source
+        exe_dir = os.path.dirname(__file__)
+
+    config_path = os.path.join(exe_dir, 'config.json')
 
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Missing config file: {config_path}")
@@ -29,7 +67,7 @@ def load_config():
     with open(config_path, "r") as f:
         data = json.load(f)
 
-    return data.get("JOYSTICK_BUTTON_MAPPINGS", [])
+    return data
 
 def _timestamp():
     """Return formatted timestamp."""
@@ -96,7 +134,7 @@ def pressKey(keyToPress):
 
 def getTelemetry():
     try:
-        telemetry = requests.get('http://localhost:25555/api/ets2/telemetry').json()
+        telemetry = requests.get(GLOBAL_CONFIG["TelemetryAPIAddress"]).json()
         return telemetry
     except Exception as e:
         printError("Telemetry read failed:", e)
@@ -137,25 +175,121 @@ def if_run_script():
     except Exception as e:
         printError("Failed to get active window", e)
         return False
+
+def print_table(headers, rows):
+    # ANSI Colors
+    HEADER = "\033[1;36m"  # bright cyan
+    RESET  = "\033[0m"
+
+    # Double-line table borders
+    TL = "╔"; TM = "╦"; TR = "╗"
+    ML = "╠"; MM = "╬"; MR = "╣"
+    BL = "╚"; BM = "╩"; BR = "╝"
+    VL = "║"; HL = "═"
+
+    # Compute column widths (auto-size)
+    col_widths = []
+    for col in range(len(headers)):
+        max_len = len(headers[col])
+        for row in rows:
+            max_len = max(max_len, len(str(row[col])))
+        col_widths.append(max_len)
+
+    # Build border lines
+    def border(left, mid, right):
+        line = left
+        for i, w in enumerate(col_widths):
+            line += HL * (w + 2)
+            line += mid if i < len(col_widths) - 1 else right
+        return line
+
+    top_border    = border(TL, TM, TR)
+    middle_border = border(ML, MM, MR)
+    bottom_border = border(BL, BM, BR)
+
+    # Print table
+    print(top_border)
+
+    # Header row (colored)
+    header_line = VL
+    for i, h in enumerate(headers):
+        header_line += f" {HEADER}{h}{RESET}{' ' * (col_widths[i] - len(h))} {VL}"
+    print(header_line)
+
+    print(middle_border)
+
+    # Rows
+    for row in rows:
+        row_line = VL
+        for i, col in enumerate(row):
+            col = str(col)
+            row_line += f" {col}{' ' * (col_widths[i] - len(col))} {VL}"
+        print(row_line)
+
+    print(bottom_border)
+
+
+def listAllJoysticks(reload=False):
+    if reload:
+        pygame.joystick.quit()
+        pygame.quit()
+    pygame.init()
+    pygame.joystick.init()
+    GLOBAL_JOYSTICKS = pygame.joystick
+    number_of_joysticks = GLOBAL_JOYSTICKS.get_count()
+    # List connected joysticks
+    if number_of_joysticks == 0:
+        printWarn("No joystick detected!")
+        print()
+        print("  [X] Exit")
+        print("  [R] Refresh Joysticks List again")
+        print("---------------------------------------------------")
+    else:
+        # List all joysticks
+        printInfo("Connected joysticks:")
+        # table header
+        # print("┌───────┬─────────────────────────────────────────┬───────────────────────────────────────┐")
+        # print("│ ID    │ NAME                                    │ GUID                                  │")
+        # print("├───────┼─────────────────────────────────────────┼───────────────────────────────────────┤")
+
+        # for i in range(number_of_joysticks):
+        #     index = f"[{i}]"
+        #     joy_name = pygame.joystick.Joystick(i).get_name()
+        #     print(f"|  {index:<5}| {joy_name:<40}| {pygame.joystick.Joystick(i).get_guid():<38}|")
+        # print("└───────┴─────────────────────────────────────────┴───────────────────────────────────────┘")
+        rows = []
+        for i in range(number_of_joysticks):
+            js = GLOBAL_JOYSTICKS.Joystick(i)
+            rows.append([
+                f"[{i}]",
+                js.get_name(),
+                js.get_guid(),
+                js.get_numbuttons()
+            ])
+        print_table(
+            headers=["ID", "NAME", "GUID", "NumButtons"],
+            rows=rows
+        )
+        print()
+        print("  [X] Exit")
+        print("  [R] Refresh Joysticks List again")
+        print("---------------------------------------------------")
+
+def loading_animation(duration=2):
+    print("Loading", end="", flush=True)
+    start_time = time.time()
+    while (time.time() - start_time) < duration:
+        for dot_count in range(1, 4):
+            # Print dots after "Loading", overwrite only the dots
+            print("\rLoading" + "." * dot_count + " " * (3 - dot_count), end="", flush=True)
+            time.sleep(0.5)
+    print("\rLoading... Done!  ")  # Final message
     
 # Initialize Pygame joystick
 try:
-    
-    pygame.init()
-    pygame.joystick.init()
-    num_joysticks = pygame.joystick.get_count()
-    # List connected joysticks
-    if num_joysticks == 0:
-        printWarn("No joystick detected!")
-        exit()
+    GLOBAL_CONFIG = load_config()
 
-    # List all joysticks
-    printInfo("Connected joysticks:")
-    for i in range(num_joysticks):
-        joy_name = pygame.joystick.Joystick(i).get_name()
-        print(f"  [{i}] {joy_name}")
-    print()
-    print("  [X] Exit")
+    listAllJoysticks()
     # joy = pygame.joystick.Joystick(0)
     # if pygame.joystick.get_count() == 2:
     #     joy = pygame.joystick.Joystick(1)
@@ -164,18 +298,23 @@ try:
     selected_joystick_index = -1
     while True:
         try:
-            selected_joystick_index = (input("Select joystick by number: "))
+            selected_joystick_index = (input("Select joystick by ID number: "))
             if selected_joystick_index == 'x' or selected_joystick_index == 'X':
                 printInfo("Exiting...")
                 exit()
-            selected_joystick_index = int(selected_joystick_index)
-            if 0 <= selected_joystick_index < num_joysticks:
-                break
+            if selected_joystick_index == "r" or selected_joystick_index == "R":
+                listAllJoysticks(True)
+                continue
             else:
-                if num_joysticks == 1:
-                    printWarn("Please enter 0 since there is only one joystick connected Or X to exit.")
+                num_joysticks = GLOBAL_JOYSTICKS.get_count()
+                selected_joystick_index = int(selected_joystick_index)
+                if 0 <= selected_joystick_index < num_joysticks:
+                    break
                 else:
-                    printWarn(f"Please enter a number between 0 and {num_joysticks-1}")
+                    if num_joysticks == 1:
+                        printWarn("Please enter 0 since there is only one joystick connected Or X to exit.")
+                    else:
+                        printWarn(f"Please enter a number between 0 and {num_joysticks-1}")
         except ValueError:
             printWarn("Invalid input. Enter a number.")
 
@@ -183,12 +322,16 @@ try:
     joy = pygame.joystick.Joystick(selected_joystick_index)
     joy.init()
     printInfo(f"Using joystick: {joy.get_name()} with {joy.get_numbuttons()} buttons")
-
+    time.sleep(2)
+    printInfo("---------------------------Telemetry Syncer Started-----------------------------")
+    printInfo("-----------------------------Press Ctrl+C to exit-------------------------------")
+    loading_animation(5)
     # Main loop
     while True:
 
         # Read ETS2 telemetry
         try:
+            
             if if_run_script():
                 telemetry = getTelemetry()
                 if not telemetry:
@@ -213,12 +356,16 @@ try:
 
                         # # Example: Button 7(index=6) → Beacon Lights
                         # syncButton(joy, 6, 'truck/lightsBeaconOn', 'o', "BeaconLights", telemetry)
-                        JOYSTICK_BUTTON_MAPPINGS = load_config()
+                        
+                        JOYSTICK_BUTTON_MAPPINGS = GLOBAL_CONFIG.get("JOYSTICK_BUTTON_MAPPINGS", [])
+                        joystick_button_index_correction = 0
+                        if GLOBAL_CONFIG["isButtonNumberIndex"] == False:
+                            joystick_button_index_correction = -1
                         for cfg in JOYSTICK_BUTTON_MAPPINGS:
                             syncButton(
                                 joy,
-                                cfg["joystickButtonIndex"],
-                                cfg["telemetryPath"],
+                                cfg["joystickButtonNumber"]+joystick_button_index_correction,
+                                cfg["telemetryPathToSync"],
                                 cfg["keyToPress"],
                                 cfg["actionName"],
                                 telemetry
