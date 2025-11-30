@@ -170,7 +170,7 @@ If your `config.json` is not in the same folder, or named differently,  then the
 
 | Problem / Symptom | Possible Cause / Fix |
 |--|--|
-| Button presses not detected | Wrong `button_index`, wrong device ID, or polling mode mismatch — use debug script to verify. |
+| Button presses not detected | Wrong `button_index` or wrong device ID — use debug script to verify. |
 | Keypresses not working in ETS2 | Syncer not running as Admin; ETS2 not in foreground; wrong key mapping / ETS2 profile mismatch. |
 
 
