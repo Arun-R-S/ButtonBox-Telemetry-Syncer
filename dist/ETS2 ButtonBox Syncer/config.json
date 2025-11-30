@@ -2,7 +2,7 @@
     "LoggingLevels": {
         "INFO": true,
         "WARN": true,
-        "DEBUG": true,
+        "DEBUG": false,
         "DEBUGWARN": false,
         "ERROR": true
     },
