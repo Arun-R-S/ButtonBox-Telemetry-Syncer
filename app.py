@@ -132,14 +132,19 @@ def pressKey(keyToPress):
             # printDebug("It's a string")
             printDebug(f"Pressing {keyToPress}")
             keyboard.press_and_release(keyToPress)
-            time.sleep(0.3)    
+            time.sleep(0.15)    
         elif isinstance(keyToPress, (list, tuple)) and all(isinstance(x, str) for x in keyToPress):
             #printDebug("It's a list or tuple of strings")
             printDebug(f"Pressing {keyToPress}")
-            keyboard.press(keyToPress[0])
-            keyboard.press_and_release(keyToPress[1])
-            keyboard.release(keyToPress[0])
-            time.sleep(0.3)
+            # keyboard.press(keyToPress[0])
+            # keyboard.press_and_release(keyToPress[1])
+            # keyboard.release(keyToPress[0])
+            # time.sleep(0.3)
+            mod = keyToPress[0]
+            key = keyToPress[1]
+            combo = f"{mod}+{key}"
+            keyboard.send(combo)
+            time.sleep(0.15)
         else:
             printError("PressKey: Key assignment is not defined correctly.")
     except Exception as e:
