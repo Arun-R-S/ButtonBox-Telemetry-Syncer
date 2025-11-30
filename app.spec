@@ -43,7 +43,7 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='ETS2 ButtonBox Syncer',
+    name='ETS2-ButtonBox-Syncer',
 )
 
 # Copy JSON after build
