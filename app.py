@@ -383,6 +383,7 @@ try:
                                 cfg["actionName"],
                                 telemetry
                             )
+			time.sleep(0.2)
                     elif isGamePaused:
                         printDebugWarn("Game Paused")
             else:
