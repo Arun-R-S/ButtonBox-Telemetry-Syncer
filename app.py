@@ -8,6 +8,7 @@ import win32gui
 from datetime import datetime
 import colorama
 colorama.init()
+from button_config import JOYSTICK_BUTTON_MAPPINGS
 
 # --- Color codes ---
 RESET = "\033[0m"
@@ -190,14 +191,24 @@ try:
                     elif not isGamePaused:
                         printInfo(f"Truck ID: {truck_id}")
                         printInfo(f"Game Paused: {isGamePaused}")
-                        # Example: Button 1(index=0) → Electricity
-                        syncButton(joy, 0, 'truck/electricOn', ['shift', 'e'], "Electricity", telemetry)
+                        # # Example: Button 1(index=0) → Electricity
+                        # syncButton(joy, 0, 'truck/electricOn', ['shift', 'e'], "Electricity", telemetry)
 
-                        # Example: Button 5(index=4) → High Beam Lights
-                        syncButton(joy, 4, 'truck/lightsBeamHighOn', 'k', "HighBeam", telemetry)
+                        # # Example: Button 5(index=4) → High Beam Lights
+                        # syncButton(joy, 4, 'truck/lightsBeamHighOn', 'k', "HighBeam", telemetry)
 
-                        # Example: Button 7(index=6) → Beacon Lights
-                        syncButton(joy, 6, 'truck/lightsBeaconOn', 'o', "BeaconLights", telemetry)
+                        # # Example: Button 7(index=6) → Beacon Lights
+                        # syncButton(joy, 6, 'truck/lightsBeaconOn', 'o', "BeaconLights", telemetry)
+
+                        for cfg in JOYSTICK_BUTTON_MAPPINGS:
+                            syncButton(
+                                joy,
+                                cfg["joystickButtonIndex"],
+                                cfg["telemetryPath"],
+                                cfg["keyToPress"],
+                                cfg["actionName"],
+                                telemetry
+                            )
                     elif isGamePaused:
                         printWarn("Game Paused")
             else:
