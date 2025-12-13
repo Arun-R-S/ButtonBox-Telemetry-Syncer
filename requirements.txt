@@ -1,0 +1,8 @@
+pytest
+requests
+pygame
+keyboard
+pygetwindow
+pyautogui
+colorama
+pywin32
