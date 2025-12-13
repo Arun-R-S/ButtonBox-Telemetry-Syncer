@@ -94,6 +94,7 @@ Here is the exact config you provided (reformatted). I explain every key below.
         "WARN": true,
         "DEBUG": false,
         "DEBUGWARN": false,
+        "DEBUGDEEP": false,
         "ERROR": true
     },
     "ACTIVATE_SCRIPT_ONLY_IN_ETS2": true,
@@ -124,7 +125,7 @@ Here is the exact config you provided (reformatted). I explain every key below.
 
 -   **`LoggingLevels`** — toggle which logging levels are enabled:
     
-    -   `INFO`, `WARN`, `DEBUG`, `DEBUGWARN`, `ERROR` — `true`/`false`.
+    -   `INFO`, `WARN`, `DEBUG`, `DEBUGWARN`, `DEBUGDEEP`, `ERROR` — `true`/`false`.
         
     -   Set `DEBUG` to `true` while mapping buttons to get verbose console logs.
         
@@ -179,7 +180,7 @@ If your `config.json` is not in the same folder, or named differently,  then the
 | Keypresses not working in ETS2 | Syncer not running as Admin; ETS2 not in foreground; wrong key mapping / ETS2 profile mismatch. |
 
 
-💡 Enable `"DEBUG": true` and `"DEBUGWARN": true` in config to log all events to `console` — helps in diagnosing issues.
+💡 Enable `"DEBUG": true` , `"DEBUGWARN": true` and `"DEBUGDEEP": true` in config to log all events to `console` — helps in diagnosing issues.
 
 **Important Note**: Assign any keyboard key or combo keys(modifier + key) as primary for each and then assign button box physical switches as secondary in the ETS2 Key Binding Settings. So that this tool can 	able to sync the Physical Switch state with the ETS2 state through the keyboard key. If you assign just the primary or secondary key as button box key then this tool can't able to sync. So it need another key binding as keyboard key.
 
