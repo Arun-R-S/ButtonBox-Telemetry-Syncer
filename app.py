@@ -21,9 +21,10 @@ colorama.init()
 import json
 
 
-# --- Color codes ---
+# --- Console Color codes ---
 COLOR_RESET = "\033[0m"
 COLOR_DEBUG = "\033[36m"        # Cyan
+COLOR_DEBUG_DEEP = "\033[36m"   # Cyan
 COLOR_DEBUG_WARN = "\033[95m"   # Bright Magenta
 COLOR_INFO  = "\033[32m"        # Green
 COLOR_WARN  = "\033[33m"        # Yellow
@@ -52,21 +53,26 @@ GLOBAL_JOYSTICKS = pygame.joystick
 def load_config():
     """Load JSON config file and return the mappings list."""
     config_path = "config.json"
+    print(f"Loading config from: {config_path}")
 
     if getattr(sys, 'frozen', False):
     # running from PyInstaller EXE
         exe_dir = os.path.dirname(sys.executable)
+        print(f"Executable directory: {exe_dir}")
     else:
         # running from source
         exe_dir = os.path.dirname(__file__)
+        print(f"Script directory: {exe_dir}")
 
     config_path = os.path.join(exe_dir, 'config.json')
+    print(f"Final config path: {config_path}")
 
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Missing config file: {config_path}")
 
     with open(config_path, "r") as f:
         data = json.load(f)
+        printDebugDeep(f"Config data loaded: {data}")
 
     return data
 
@@ -84,6 +90,10 @@ def printLog(message):
 def printDebug(message):
     if GLOBAL_CONFIG.get("LoggingLevels", {}).get("DEBUG", False):
         LogPrint("DEBUG", COLOR_DEBUG, message)
+
+def printDebugDeep(message):
+    if GLOBAL_CONFIG.get("LoggingLevels", {}).get("DEBUGDEEP", False):
+        LogPrint("DEBUG-DEEP", COLOR_DEBUG_DEEP, message)
 
 def printDebugWarn(message):
     if GLOBAL_CONFIG.get("LoggingLevels", {}).get("DEBUGWARN", False):
@@ -331,6 +341,8 @@ try:
                 else:
                     if num_joysticks == 1:
                         printWarn("Please enter 0 since there is only one joystick connected Or X to exit.")
+                    elif num_joysticks == 0:
+                        printWarn("No joysticks connected. Please connect a joystick or press X to exit.")
                     else:
                         printWarn(f"Please enter a number between 0 and {num_joysticks-1}")
         except ValueError:
