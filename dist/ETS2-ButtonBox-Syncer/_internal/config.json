@@ -4,6 +4,7 @@
         "WARN": true,
         "DEBUG": false,
         "DEBUGWARN": false,
+        "DEBUGDEEP": false,
         "ERROR": true
     },
     "ACTIVATE_SCRIPT_ONLY_IN_ETS2": true,
