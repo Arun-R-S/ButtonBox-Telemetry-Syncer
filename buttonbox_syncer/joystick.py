@@ -46,13 +46,14 @@ class JoystickMonitor(threading.Thread):
         _logger.debug("JoystickMonitor thread started")
         try:
             init_fn = getattr(pygame.joystick, 'init', None)
-            _logger.debugDeep(f"Joystick init function: {init_fn}")
+            _logger.debug(f"Joystick init function: {init_fn}")
             if callable(init_fn):
                 init_fn()
         except Exception:
             pass
         try:
             js = pygame.joystick.Joystick(self.selected_index)
+            _logger.debug(f"Joystick object created for index {self.selected_index}")
             # Guard logging against faked joystick objects used in tests
             try:
                 jid = js.get_id() if callable(getattr(js, 'get_id', None)) else self.selected_index
@@ -74,22 +75,23 @@ class JoystickMonitor(threading.Thread):
         # initial state
         for b in range(js.get_numbuttons()):
             self._states[b] = js.get_button(b)
-
+        _logger.debug(f"Initial joystick button states: {self._states}")
         while not self._stop.is_set():
             # ensure telemetry is fresh before each check cycle if a poller
             # was provided
-            try:
-                if self.telemetry_poller is not None:
-                    self.telemetry_poller.fetch_now()
-            except Exception:
-                pass
-            pygame.event.pump()
-            for b in range(js.get_numbuttons()):
-                state = js.get_button(b)
-                if state != self._states.get(b):
-                    self._states[b] = state
-                    # dispatch button change
-                    self.dispatcher.dispatch('button_changed', self.selected_index, b, bool(state))
+            # try:
+            #     if self.telemetry_poller is not None:
+            #         _logger.debugDeep("Fetching fresh telemetry data before joystick cycle check")
+            #         self.telemetry_poller.fetch_now()
+            # except Exception:
+            #     pass
+            # pygame.event.pump()
+            # for b in range(js.get_numbuttons()):
+            #     state = js.get_button(b)
+            #     if state != self._states.get(b):
+            #         self._states[b] = state
+            #         # dispatch button change
+            #         self.dispatcher.dispatch('button_changed', self.selected_index, b, bool(state))
             # dispatch a per-cycle event with the current button states so
             # other components (like SyncManager) can perform a full
             # configuration-driven check each iteration.

@@ -3,7 +3,7 @@ from . import logger as _logger
 def get_nested_value(data: Any, path: str):
     try:
         keys = path.split('/') if path else []
-        _logger.debugDeep(f"Getting nested value for path '{path}' with keys {keys} from data {data}")
+        _logger.debugDeep(f"Getting nested value for path '{path}' with keys {keys} from data")
         for k in keys:
             data = data[k]
         _logger.debugDeep(f"Retrieved nested value: {data}")

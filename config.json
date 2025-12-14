@@ -3,7 +3,7 @@
         "INFO": true,
         "WARN": true,
         "DEBUG": true,
-        "DEBUGWARN": true,
+        "DEBUGWARN": false,
         "DEBUGDEEP": false,
         "ERROR": true
     },
@@ -11,6 +11,7 @@
     "ETS2_WINDOW_TITLE": "Euro Truck Simulator 2",
     "isButtonNumberIndex": true,
     "TelemetryAPIAddress":  "http://localhost:25555/api/ets2/telemetry",
+    "Poller_Interval":0.9,
     "JOYSTICK_BUTTON_MAPPINGS": [
         {
             "joystickButtonNumber": 0,
