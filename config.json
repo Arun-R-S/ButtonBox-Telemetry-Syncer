@@ -2,9 +2,9 @@
     "LoggingLevels": {
         "INFO": true,
         "WARN": true,
-        "DEBUG": false,
-        "DEBUGWARN": false,
-        "DEBUGDEEP": false,
+        "DEBUG": true,
+        "DEBUGWARN": true,
+        "DEBUGDEEP": true,
         "ERROR": true
     },
     "ACTIVATE_SCRIPT_ONLY_IN_ETS2": true,

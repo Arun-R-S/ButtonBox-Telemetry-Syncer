@@ -1,6 +1,6 @@
 """Slim orchestrator that wires modular components together."""
-from buttonbox_syncer.config import load_config
-from buttonbox_syncer.logger import configure, info, debug, warn, error
+import buttonbox_syncer.config as _config
+import buttonbox_syncer.logger as _logger
 from buttonbox_syncer.dispatcher import EventDispatcher
 from buttonbox_syncer.telemetry import TelemetryPoller
 from buttonbox_syncer.joystick import JoystickMonitor
@@ -9,9 +9,14 @@ import time
 
 
 def main():
-    cfg = load_config()
-    configure(cfg)
-
+    cfg = _config.load_config()
+    #_logger.configure(cfg)
+    _logger.info('Info Logging initialized')
+    _logger.warn('Warn Logging initialized')
+    _logger.error('Error Logging initialized')
+    _logger.debug('Debug Logging initialized')
+    _logger.debugWarn('Debug-Warn Logging initialized')
+    _logger.debugDeep('Debug-Deep Logging initialized')
     dispatcher = EventDispatcher()
 
     # joystick index correction: if config uses 1-based numbering convert to 0-based
@@ -23,11 +28,11 @@ def main():
     jm = JoystickMonitor(cfg, dispatcher)
     joysticks = jm.list_joysticks()
     if not joysticks:
-        warn('No joysticks detected. Connect one and restart.')
+        _logger.warn('No joysticks detected. Connect one and restart.')
         return
-    print('Connected joysticks:')
+    _logger.info('Connected joysticks:')
     for j in joysticks:
-        print(f"[{j['index']}] {j['name']} ({j['num_buttons']} buttons)")
+        _logger.info(f"[{j['index']}] {j['name']} ({j['num_buttons']} buttons)")
 
     selected = None
     while selected is None:
@@ -39,14 +44,14 @@ def main():
             if any(j['index'] == idx for j in joysticks):
                 selected = idx
             else:
-                print('Invalid selection')
+                _logger.warn('Invalid selection')
         except ValueError:
-            print('Enter a number')
+            _logger.info('Enter a number')
 
     # start components
     jm.selected_index = selected
     sync = SyncManager(cfg, dispatcher, joystick_index_correction=joystick_index_correction)
-    info('Starting telemetry poller and joystick monitor')
+    _logger.info('Starting telemetry poller and joystick monitor')
     tp.start()
     jm.start()
 
@@ -54,7 +59,7 @@ def main():
         while True:
             time.sleep(0.5)
     except KeyboardInterrupt:
-        info('Shutting down...')
+        _logger.info('Shutting down...')
         tp.stop()
         jm.stop()
 

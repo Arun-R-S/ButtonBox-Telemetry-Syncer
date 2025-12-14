@@ -1,0 +1,6 @@
+{
+  "test": "python -m pytest -q",
+  "report": "python -m pytest -q --html=report.html --self-contained-html",
+  "report-open": "python -m pytest -q --html=report.html --self-contained-html && start report.html",
+  "start": "python app.py"
+}
