@@ -54,9 +54,11 @@ class SyncManager:
             desired_game_state = None
             if self.telemetry:
                 desired_game_state = get_nested_value(self.telemetry, telemetry_path)
+            _logger.debugDeep(f"Cycle check: button {cfg_button}, physical_state={physical_state}, desired_game_state={desired_game_state} for telemetry path '{telemetry_path}'")
             # if telemetry value is not available or the physical button
             # is not present in states, skip this mapping
             if desired_game_state is None or physical_state is None:
+                _logger.debug(f"Cycle check: skipping button {cfg_button} due to missing telemetry or physical state.")
                 continue
             if bool(physical_state) != bool(desired_game_state):
                 _logger.info(f"Cycle check: button {cfg_button} state {physical_state} != desired {desired_game_state} for '{telemetry_path}'. Pressing key.")

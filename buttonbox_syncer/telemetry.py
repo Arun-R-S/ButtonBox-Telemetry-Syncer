@@ -44,6 +44,9 @@ class TelemetryPoller(threading.Thread):
                 data = r.json()
                 self.dispatcher.dispatch('telemetry', data)
                 return data
-        except Exception:
+            else:
+                _logger.warn(f"fetch_now received non-200 status code: {r.status_code}")
+        except Exception as e:
+            _logger.error(f"fetch_now telemetry fetch failed:",e)
             pass
         return None
