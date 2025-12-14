@@ -25,6 +25,59 @@ ascii_art = f"""
 """
 
 
+def print_table(headers, rows):
+    # ANSI Colors
+    HEADER = "\033[1;36m"  # bright cyan
+    RESET  = "\033[0m"
+
+    # Double-line table borders
+    TL = "╔"; TM = "╦"; TR = "╗"
+    ML = "╠"; MM = "╬"; MR = "╣"
+    BL = "╚"; BM = "╩"; BR = "╝"
+    VL = "║"; HL = "═"
+
+    # Compute column widths (auto-size)
+    col_widths = []
+    for col in range(len(headers)):
+        max_len = len(headers[col])
+        for row in rows:
+            max_len = max(max_len, len(str(row[col])))
+        col_widths.append(max_len)
+
+    # Build border lines
+    def border(left, mid, right):
+        line = left
+        for i, w in enumerate(col_widths):
+            line += HL * (w + 2)
+            line += mid if i < len(col_widths) - 1 else right
+        return line
+
+    top_border    = border(TL, TM, TR)
+    middle_border = border(ML, MM, MR)
+    bottom_border = border(BL, BM, BR)
+
+    # Print table
+    print(top_border)
+
+    # Header row (colored)
+    header_line = VL
+    for i, h in enumerate(headers):
+        header_line += f" {HEADER}{h}{RESET}{' ' * (col_widths[i] - len(h))} {VL}"
+    print(header_line)
+
+    print(middle_border)
+
+    # Rows
+    for row in rows:
+        row_line = VL
+        for i, col in enumerate(row):
+            col = str(col)
+            row_line += f" {col}{' ' * (col_widths[i] - len(col))} {VL}"
+        print(row_line)
+
+    print(bottom_border)
+
+
 def main():
     print(ascii_art)
     time.sleep(2)
@@ -49,9 +102,8 @@ def main():
     if not joysticks:
         _logger.warn('No joysticks detected. Connect one and restart.')
         return
-    _logger.info('Connected joysticks:')
-    for j in joysticks:
-        _logger.info(f"[{j['index']}] {j['name']} ({j['num_buttons']} buttons)")
+    rows = [[f"[{j['index']}]", j['name'], str(j['num_buttons'])] for j in joysticks]
+    print_table(headers=["ID", "NAME", "NumButtons"], rows=rows)
 
     # allow refresh of joystick list with 'R' and exit with 'X'
     selected = None
@@ -62,9 +114,8 @@ def main():
                 return
             if val.lower() == 'r':
                 joysticks = jm.list_joysticks()
-                _logger.info('Refreshed joysticks:')
-                for j in joysticks:
-                    _logger.info(f"[{j['index']}] {j['name']} ({j['num_buttons']} buttons)")
+                rows = [[f"[{j['index']}]", j['name'], str(j['num_buttons'])] for j in joysticks]
+                print_table(headers=["ID", "NAME", "NumButtons"], rows=rows)
                 continue
             idx = int(val)
             if any(j['index'] == idx for j in joysticks):
