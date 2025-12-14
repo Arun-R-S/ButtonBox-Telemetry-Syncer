@@ -41,6 +41,7 @@ class SyncManager:
                     self._press_key(cfg.get('keyToPress'))
 
     def _on_cycle(self, joystick_index, states):
+        _logger.info(f"Cycle check tick : telemetry_present={bool(self.telemetry)} mappings={len(self.cfg.get('JOYSTICK_BUTTON_MAPPINGS', []))}")
         # For each configured mapping, compare the current telemetry value
         # with the physical joystick state for this cycle and press the
         # configured key when there's a mismatch. This ensures every
