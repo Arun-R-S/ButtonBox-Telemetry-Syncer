@@ -1,6 +1,6 @@
 {
   "test": "python -m pytest -q",
   "report": "python -m pytest -q --html=report.html --self-contained-html",
-  "run-test-report": "python -m pytest -q --html=report.html --self-contained-html && start report.html",
+  "run-test-report": "python -m pytest -q --html=report.html --self-contained-html && Start report.html",
   "start": "python app.py"
 }
