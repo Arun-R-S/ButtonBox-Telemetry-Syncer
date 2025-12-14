@@ -39,9 +39,27 @@ def run_script(name, extra_args=None):
         cmd = cmd + ' ' + ' '.join(shlex.quote(a) for a in extra_args)
 
     print(f"Running: {cmd}")
-    # Use shell to run complex commands exactly as in npm scripts
-    proc = subprocess.run(cmd, shell=True)
-    return proc.returncode
+    # Use Popen so we can handle Ctrl+C (KeyboardInterrupt) gracefully
+    p = subprocess.Popen(cmd, shell=True)
+    try:
+        returncode = p.wait()
+    except KeyboardInterrupt:
+        # Forward terminate to the child process and return a sensible
+        # exit code instead of printing a full traceback in the parent.
+        try:
+            p.terminate()
+        except Exception:
+            pass
+        print("Interrupted by user")
+        return 130
+    except Exception as e:
+        print(f"Error running script: {e}")
+        try:
+            p.kill()
+        except Exception:
+            pass
+        return 1
+    return returncode
 
 
 def print_usage():
