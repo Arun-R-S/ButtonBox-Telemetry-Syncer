@@ -5,6 +5,8 @@ colorama.init()
 from .config import CONFIG
 import copy
 
+from .logger_helper import _caller_info
+
 # --- Console Color codes ---
 COLOR_RESET = "\033[0m"
 COLOR_DEBUG = "\033[36m"        # Cyan
@@ -77,15 +79,26 @@ except Exception:
 def _timestamp():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+# def _log(level, color, message, exc=None):
+#     # try:
+#     #     enabled = bool(_config.get('LoggingLevels', {}).get(level, False))
+#     # except Exception:
+#     #     enabled = False
+#     # # always show WARN/ERROR unless explicitly disabled
+#     # if enabled or level in ('ERROR', 'WARN'):
+#     #     print(f"[{_timestamp()}] {color}{level:<7}{COLOR_RESET} {message} {f'Exception: {exc}' if exc else ''}")
+#     print(f"[{_timestamp()}] {color}{level:<7}{COLOR_RESET} {message} {f'Exception: {exc}' if exc else ''}")
+
 def _log(level, color, message, exc=None):
-    # try:
-    #     enabled = bool(_config.get('LoggingLevels', {}).get(level, False))
-    # except Exception:
-    #     enabled = False
-    # # always show WARN/ERROR unless explicitly disabled
-    # if enabled or level in ('ERROR', 'WARN'):
-    #     print(f"[{_timestamp()}] {color}{level:<7}{COLOR_RESET} {message} {f'Exception: {exc}' if exc else ''}")
-    print(f"[{_timestamp()}] {color}{level:<7}{COLOR_RESET} {message} {f'Exception: {exc}' if exc else ''}")
+    caller = _caller_info()
+    print(
+        f"[{_timestamp()}] "
+        f"[{color}{level:<10}{COLOR_RESET}] "
+        f"[{color}{caller}{COLOR_RESET}]    "
+        f"{message} "
+        f"{f'| Exception: {exc}' if exc else ''}"
+    )
+
 
 def info(msg):
     try:

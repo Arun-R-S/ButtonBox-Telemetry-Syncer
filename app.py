@@ -140,7 +140,7 @@ def main():
     jm.selected_index = selected
     sync = SyncManager(cfg, dispatcher, joystick_index_correction=joystick_index_correction)
     _logger.info('Starting telemetry poller and joystick monitor')
-    tp.start()
+    #tp.start()
     jm.start()
 
     try:
@@ -148,7 +148,7 @@ def main():
             time.sleep(0.5)
     except KeyboardInterrupt:
         _logger.info('Shutting down...')
-        tp.stop()
+        #tp.stop()
         jm.stop()
 
 

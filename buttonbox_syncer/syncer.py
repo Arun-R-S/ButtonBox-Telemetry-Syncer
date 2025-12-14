@@ -22,7 +22,7 @@ class SyncManager:
     def _on_button_changed(self, joystick_index, button_index, pressed):
         # apply correction for indexing if config requires
         mapping_list = self.cfg.get('JOYSTICK_BUTTON_MAPPINGS', [])
-        _logger.debugDeep(f"Mapping List {mapping_list}")
+        _logger.debugDeep(f"_on_button_changed Mapping List {mapping_list}")
         _logger.debug(f"Button changed event received: joystick_index={joystick_index}, button_index={button_index}, pressed={pressed}")
         for cfg in mapping_list:
             cfg_button = cfg.get('joystickButtonNumber') + (self.joystick_index_correction or 0)
@@ -76,4 +76,4 @@ class SyncManager:
                 keyboard.press_and_release(key)
             time.sleep(0.15)
         except Exception:
-            pass
+            raise

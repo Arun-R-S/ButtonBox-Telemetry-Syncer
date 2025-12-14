@@ -27,7 +27,7 @@ class TelemetryPoller(threading.Thread):
                     self.dispatcher.dispatch('telemetry', data)
             except Exception:
                 # swallow — syncer will handle missing telemetry
-                pass
+                raise
             time.sleep(self.interval)
 
     def fetch_now(self):
@@ -48,5 +48,5 @@ class TelemetryPoller(threading.Thread):
                 _logger.warn(f"fetch_now received non-200 status code: {r.status_code}")
         except Exception as e:
             _logger.error(f"fetch_now telemetry fetch failed:",e)
-            pass
+            raise
         return None
