@@ -93,11 +93,12 @@ def main():
 
     # joystick index correction: if config uses 1-based numbering convert to 0-based
     joystick_index_correction = -1 if not cfg.get('isButtonNumberIndex', True) else 0
+    _logger.info(f"Using joystick index correction: {joystick_index_correction}")
 
-    tp = TelemetryPoller(cfg, dispatcher, interval=0)
+    # tp = TelemetryPoller(cfg, dispatcher, interval=0)
 
     # prompt for joystick selection
-    jm = JoystickMonitor(cfg, dispatcher, telemetry_poller=tp, poll_interval=0)
+    jm = JoystickMonitor(cfg)
     joysticks = jm.list_joysticks()
     if not joysticks:
         _logger.warn('No joysticks detected. Connect one and restart.')
@@ -140,10 +141,13 @@ def main():
     jm.selected_index = selected
     local_poller_interval = cfg.get('Poller_Interval',0.3)
     _logger.info(f"Using poller interval: {local_poller_interval} seconds")
-    sync = SyncManager(cfg, dispatcher, joystick_index_correction=joystick_index_correction, poll_interval=local_poller_interval)
-    _logger.info('Starting telemetry poller and joystick monitor')
+    _logger.debug(f"Starting SyncManager for joystick {jm}")
+    tm = TelemetryPoller(cfg)
+    sync = SyncManager(cfg, dispatcher, joystick_index_correction=joystick_index_correction, poll_interval=local_poller_interval, selected_joystick=jm, thisTelemetry=tm)
+    _logger.info('Starting joystick monitor')
     # tp.start()
-    jm.start()
+    # jm.start()
+    sync.start()
 
     try:
         while True:

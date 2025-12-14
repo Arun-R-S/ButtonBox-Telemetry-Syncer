@@ -3,32 +3,31 @@ import requests
 import time
 from . import logger as _logger
 
-class TelemetryPoller(threading.Thread):
-    def __init__(self, cfg, dispatcher, interval=0.5):
-        _logger.debugDeep(f"Initializing TelemetryPoller with interval={interval}")
-        super().__init__(daemon=True)
+class TelemetryPoller():
+    def __init__(self, cfg):
+        _logger.debugDeep(f"Initializing Telemetry")
+        # super().__init__(daemon=True)
         self.cfg = cfg
-        self.dispatcher = dispatcher
-        self.interval = interval
-        self._stop = threading.Event()
+        # self._stop = threading.Event()
+        self.telemetry_data = {}
 
-    def stop(self):
-        _logger.debug("TelemetryPoller stop signal set")
-        self._stop.set()
+    # def stop(self):
+    #     _logger.debug("TelemetryPoller stop signal set")
+    #     self._stop.set()
 
-    def run(self):
-        addr = self.cfg.get('TelemetryAPIAddress')
-        _logger.info(f"Starting TelemetryPoller with address: {addr}")
-        while not self._stop.is_set():
-            try:
-                r = requests.get(addr, timeout=2)
-                if r.status_code == 200:
-                    data = r.json()
-                    self.dispatcher.dispatch('telemetry', data)
-            except Exception:
-                # swallow — syncer will handle missing telemetry
-                raise
-            time.sleep(self.interval)
+    # def run(self):
+    #     addr = self.cfg.get('TelemetryAPIAddress')
+    #     _logger.info(f"Starting TelemetryPoller with address: {addr}")
+    #     while not self._stop.is_set():
+    #         try:
+    #             r = requests.get(addr, timeout=2)
+    #             if r.status_code == 200:
+    #                 data = r.json()
+    #                 self.dispatcher.dispatch('telemetry', data)
+    #         except Exception:
+    #             # swallow — syncer will handle missing telemetry
+    #             raise
+    #         time.sleep(self.interval)
 
     def fetch_now(self):
         """Perform a single telemetry fetch synchronously and dispatch result.
@@ -42,7 +41,6 @@ class TelemetryPoller(threading.Thread):
             r = requests.get(addr, timeout=2)
             if r.status_code == 200:
                 data = r.json()
-                self.dispatcher.dispatch('telemetry', data)
                 return data
             else:
                 _logger.warn(f"fetch_now received non-200 status code: {r.status_code}")
@@ -50,3 +48,11 @@ class TelemetryPoller(threading.Thread):
             _logger.error(f"fetch_now telemetry fetch failed:",e)
             raise
         return None
+
+    def refresh(self):
+        """Fetch latest telemetry data and store it locally."""
+        self.set_telemetry_data(self.fetch_now())
+    
+    def set_telemetry_data(self, data):
+        """Manually set telemetry data (for testing or other purposes)."""
+        self.telemetry_data = data
