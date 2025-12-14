@@ -13,6 +13,7 @@ class SyncManager:
         self.joystick_index_correction = joystick_index_correction
         dispatcher.register('telemetry', self._on_telemetry)
         dispatcher.register('button_changed', self._on_button_changed)
+        dispatcher.register('cycle', self._on_cycle)
 
     def _on_telemetry(self, data):
         self.telemetry = data
@@ -21,7 +22,7 @@ class SyncManager:
     def _on_button_changed(self, joystick_index, button_index, pressed):
         # apply correction for indexing if config requires
         mapping_list = self.cfg.get('JOYSTICK_BUTTON_MAPPINGS', [])
-        _logger.debugDeep('Mapping List ',mapping_list)
+        _logger.debugDeep(f"Mapping List {mapping_list}")
         _logger.debug(f"Button changed event received: joystick_index={joystick_index}, button_index={button_index}, pressed={pressed}")
         for cfg in mapping_list:
             cfg_button = cfg.get('joystickButtonNumber') + (self.joystick_index_correction or 0)
@@ -38,6 +39,28 @@ class SyncManager:
                 if bool(pressed) != bool(desired_game_state):
                     _logger.info(f"Button {button_index} pressed state {pressed} does not match desired game state {desired_game_state} for telemetry path '{telemetry_path}'. Pressing key.")
                     self._press_key(cfg.get('keyToPress'))
+
+    def _on_cycle(self, joystick_index, states):
+        # For each configured mapping, compare the current telemetry value
+        # with the physical joystick state for this cycle and press the
+        # configured key when there's a mismatch. This ensures every
+        # mapping is checked each iteration even when no physical change
+        # event occurs.
+        mapping_list = self.cfg.get('JOYSTICK_BUTTON_MAPPINGS', [])
+        for cfg in mapping_list:
+            cfg_button = cfg.get('joystickButtonNumber') + (self.joystick_index_correction or 0)
+            physical_state = states.get(cfg_button)
+            telemetry_path = cfg.get('telemetryPathToSync')
+            desired_game_state = None
+            if self.telemetry:
+                desired_game_state = get_nested_value(self.telemetry, telemetry_path)
+            # if telemetry value is not available or the physical button
+            # is not present in states, skip this mapping
+            if desired_game_state is None or physical_state is None:
+                continue
+            if bool(physical_state) != bool(desired_game_state):
+                _logger.info(f"Cycle check: button {cfg_button} state {physical_state} != desired {desired_game_state} for '{telemetry_path}'. Pressing key.")
+                self._press_key(cfg.get('keyToPress'))
 
     def _press_key(self, key):
         try:

@@ -25,7 +25,7 @@ def main():
     tp = TelemetryPoller(cfg, dispatcher, interval=0.5)
 
     # prompt for joystick selection
-    jm = JoystickMonitor(cfg, dispatcher)
+    jm = JoystickMonitor(cfg, dispatcher, telemetry_poller=tp)
     joysticks = jm.list_joysticks()
     if not joysticks:
         _logger.warn('No joysticks detected. Connect one and restart.')
@@ -65,5 +65,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        _logger.error('Fatal error in main loop', exc=e)
     

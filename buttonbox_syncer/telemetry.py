@@ -29,3 +29,21 @@ class TelemetryPoller(threading.Thread):
                 # swallow — syncer will handle missing telemetry
                 pass
             time.sleep(self.interval)
+
+    def fetch_now(self):
+        """Perform a single telemetry fetch synchronously and dispatch result.
+
+        This can be called by other components (for example, before a
+        button-state check) so the latest telemetry is available immediately.
+        """
+        addr = self.cfg.get('TelemetryAPIAddress')
+        _logger.info(f"fetchN_now TelemetryPoller with address: {addr}")
+        try:
+            r = requests.get(addr, timeout=2)
+            if r.status_code == 200:
+                data = r.json()
+                self.dispatcher.dispatch('telemetry', data)
+                return data
+        except Exception:
+            pass
+        return None

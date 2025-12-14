@@ -47,7 +47,13 @@ def configure(config_dict):
     new_conf = copy.deepcopy(DEFAULT_CONFIG)
     lvl = config_dict.get('LoggingLevels')
     if isinstance(lvl, dict):
-        new_conf['LoggingLevels'].update(lvl)
+        # Only allow primary logging level overrides from external config.
+        # Keep developer-only verbose flags (`DEBUGWARN`, `DEBUGDEEP`) immutable
+        # so tests and runtime behaviour remain predictable.
+        allowed = {'INFO', 'WARN', 'ERROR', 'DEBUG'}
+        for k, v in lvl.items():
+            if k in allowed:
+                new_conf['LoggingLevels'][k] = v
     # copy other top-level keys through
     for k, v in config_dict.items():
         if k != 'LoggingLevels':
@@ -60,7 +66,8 @@ def configure(config_dict):
 
 # Initialize logger config from global CONFIG if available
 try:
-    print("Logger configuring from CONFIG...")
+    #print("Logger configuring from CONFIG...")
+    a=1
     #print(CONFIG)
     #configure(CONFIG)
 except Exception:

@@ -4,7 +4,7 @@ import time
 from . import logger as _logger
 
 class JoystickMonitor(threading.Thread):
-    def __init__(self, cfg, dispatcher, selected_index=0, poll_interval=0.05):
+    def __init__(self, cfg, dispatcher, selected_index=0, poll_interval=0.05, telemetry_poller=None):
         _logger.debugDeep(f"Initializing JoystickMonitor with selected_index={selected_index}, poll_interval={poll_interval}")
         super().__init__(daemon=True)
         self.cfg = cfg
@@ -13,6 +13,7 @@ class JoystickMonitor(threading.Thread):
         self.poll_interval = poll_interval
         self._stop = threading.Event()
         self._states = {}
+        self.telemetry_poller = telemetry_poller
         _logger.debug("JoystickMonitor initialized")
 
     def stop(self):
@@ -52,7 +53,20 @@ class JoystickMonitor(threading.Thread):
             pass
         try:
             js = pygame.joystick.Joystick(self.selected_index)
-            _logger.info(f"Selected joystick: {js.get_id()} - {js.get_name()} with {js.get_numbuttons()} buttons")
+            # Guard logging against faked joystick objects used in tests
+            try:
+                jid = js.get_id() if callable(getattr(js, 'get_id', None)) else self.selected_index
+            except Exception:
+                jid = self.selected_index
+            try:
+                jname = js.get_name() if callable(getattr(js, 'get_name', None)) else f"Joystick-{self.selected_index}"
+            except Exception:
+                jname = f"Joystick-{self.selected_index}"
+            try:
+                jbuttons = js.get_numbuttons() if callable(getattr(js, 'get_numbuttons', None)) else 0
+            except Exception:
+                jbuttons = 0
+            _logger.info(f"Selected joystick: {jid} - {jname} with {jbuttons} buttons")
             js.init()
         except Exception:
             return
@@ -62,6 +76,13 @@ class JoystickMonitor(threading.Thread):
             self._states[b] = js.get_button(b)
 
         while not self._stop.is_set():
+            # ensure telemetry is fresh before each check cycle if a poller
+            # was provided
+            try:
+                if self.telemetry_poller is not None:
+                    self.telemetry_poller.fetch_now()
+            except Exception:
+                pass
             pygame.event.pump()
             for b in range(js.get_numbuttons()):
                 state = js.get_button(b)
@@ -69,4 +90,11 @@ class JoystickMonitor(threading.Thread):
                     self._states[b] = state
                     # dispatch button change
                     self.dispatcher.dispatch('button_changed', self.selected_index, b, bool(state))
+            # dispatch a per-cycle event with the current button states so
+            # other components (like SyncManager) can perform a full
+            # configuration-driven check each iteration.
+            try:
+                self.dispatcher.dispatch('cycle', self.selected_index, dict(self._states))
+            except Exception:
+                pass
             time.sleep(self.poll_interval)
