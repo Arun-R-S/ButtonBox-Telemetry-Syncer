@@ -1,0 +1,9 @@
+[2025-12-20 14:10:30] [INFO      ] [app.py:86 (main)]    Info Logging initialized 
+[2025-12-20 14:10:30] [WARN      ] [app.py:87 (main)]    Warn Logging initialized 
+[2025-12-20 14:10:30] [ERROR     ] [app.py:88 (main)]    Error Logging initialized 
+[2025-12-20 14:10:30] [DEBUG     ] [app.py:89 (main)]    Debug Logging initialized 
+[2025-12-20 14:10:30] [INFO      ] [app.py:96 (main)]    Using joystick index correction: 0 
+[2025-12-20 14:10:30] [DEBUG     ] [joystick.py:13 (__init__)]    JoystickMonitor initialized 
+[2025-12-20 14:10:31] [DEBUG     ] [joystick.py:44 (list_joysticks)]    Listing joysticks 
+[2025-12-20 14:10:31] [DEBUG     ] [joystick.py:51 (list_joysticks)]    Pygame joystick module initialized 
+[2025-12-20 14:10:31] [WARN      ] [app.py:104 (main)]    No joysticks detected. Connect one and restart. 

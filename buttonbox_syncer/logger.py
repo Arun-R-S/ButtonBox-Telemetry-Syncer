@@ -89,16 +89,25 @@ def _timestamp():
 #     #     print(f"[{_timestamp()}] {color}{level:<7}{COLOR_RESET} {message} {f'Exception: {exc}' if exc else ''}")
 #     print(f"[{_timestamp()}] {color}{level:<7}{COLOR_RESET} {message} {f'Exception: {exc}' if exc else ''}")
 
+def write_to_file(text: str):
+    try:
+        if bool(_config.get('FileLogEnabled', False)):
+            with open(_config.get('FileLogName', 'app.log'), "a", encoding="utf-8") as f:
+                f.write(text + "\n")
+    except Exception as e:
+        error(f"Failed to write to log file: ",e)
+
 def _log(level, color, message, exc=None):
     caller = _caller_info()
+    tm = _timestamp()
     print(
-        f"[{_timestamp()}] "
+        f"[{tm}] "
         f"[{color}{level:<10}{COLOR_RESET}] "
         f"[{color}{caller}{COLOR_RESET}]    "
         f"{message} "
         f"{f'| Exception: {exc}' if exc else ''}"
     )
-
+    write_to_file(f"[{tm}] [{level:<10}] [{caller}]    {message} {f'| Exception: {exc}' if exc else ''}")
 
 def info(msg):
     try:

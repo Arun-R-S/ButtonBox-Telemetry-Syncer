@@ -1,4 +1,6 @@
 {
+    "FileLogEnabled": true,
+    "FileLogName": "ETS2ButtonBoxSyncer.log",
     "LoggingLevels": {
         "INFO": true,
         "WARN": true,
